@@ -1,90 +1,47 @@
-# rollup mjs
+# styled-atomico
+Styled Components for Atomico.js
 
-This configuration allows the creation of progressive applications (PWA) or design systems with Atomico, the project is managed thanks to [Rollup](https://rollupjs.org/).
+### Motivations
+Use CSS-in-JS in custom components development. Providing theming support for components building with Atomico.
 
-The default entry is [**index.html**](./index.html), you can create as many as you like, since rollup using the plugin `@atomico/rollup-plugin-input-html`, is capable of scanning HTML files and extracting local modules , to group them in a single MJS bunde associated with the HTML file independently, the `dist` directory is the destination of the code processed by rollup and it is the directory that you must send to production.
+### Installation
 
-Project assets such as images, svg or global styles must be added in the `dist` directory.
+You can install using *npm* or *yarn*:
 
-## Scripts
-
-```bash
-npm run build # production mode
-npm run dev # development mode
+```sh
+npm i styled-atomico
+```
+or
+```sh
+yarn add styled-atomico
 ```
 
-## Export
+### Usage
+Very simple, use like as library inside your application builded with Atomico or in your HTML/JS project as custom-component.
 
-The extraction of the js code depends on `rollup.config.js`, you can create more HTML files, since the capture of these is by means of the expression `*.html`, this capture is only done when starting Rollup.
+```javascript
+import { h, customElement } from 'atomico';
+import styled from 'styled-atomico';
 
-### Directory recommendation for application
+const Box = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: ${props => props.color};
+  width: ${props => props.size};
+  height: ${props => props.size};
+  padding: ${props => props.theme.boxPad}
+`;
 
-by default Atomico shows the following distribution to create applications.
+const theme = { boxPad: '20px' };
+function App() {
+  return (
+    <theme-provider theme={theme}>
+      <Box size="20px" color="black">Testing</Box>
+    </theme-provider>
+  );
+}
 
-```bash
-index.html
-/src
-  # You can create HoCs or reusable ui that do not
-  # need declaration as web-components
-  /components
-  # To create reusable logic between
-  # components and web-components
-  /hooks
-    useCustomHook.js
-  # You can create HoCs or reusable ui
-  # that do not need declaration as WC
-  /pages
-  	/home
-  		index.js
-  		style.css
-  # Components declared as web-components
-  /web-components
-    /hello-world
-      index.js
-      style.css
+customElement('my-app', App);
 ```
 
-### Recommendation directory for design systems
-
-if you create independent HTML files you can export the components independently, for a light export in production, comment the plugins `rollup-plugin-node-resolve` in`rollup.config.js`, in this way Atomico will not be part of the bundle.
-
-```bash
-ui-button.html # <script type="module" src="./src/web-component/ui-button">
-ui-header.html # <script type="module" src="./src/web-component/ui-header">
-/src
-  /web-component
-    /ui-button
-      index.js
-      style.css
-    /ui-header
-      index.js
-      style.css
-```
-
-The result of dist will be something like this:
-
-```
-/dist
-  ui-button.html
-  ui-button.js
-  ui-button.html
-  ui-button.js
-```
-
-You can consume this resource using unpkg, example `http://unpkg.com/my-ui/dist/my-single-web-component?module`,unpkg will automatically add Atomico as a resource of the package.
-
-## Activation of PWA
-
-The file that comes by default `index.html`, has commented the following one taken. **Remove the comnetario and this code and enable the service worker**, this default is only updated when using `npm run build`.
-
-```html
-<!--Delete comment to activate PWA
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
-  }
-</script>
--->
-```
-
-#### remember to complete manifest.json and update previously generated icons
